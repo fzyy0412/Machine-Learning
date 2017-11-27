@@ -1,6 +1,15 @@
 import pandas as pd
 import numpy as np
 class LinearRegression(object):
+
+    '''
+    ----------线性回归算法----------
+    1.lr：学习率。默认0.001
+    2.solver：求解方法。
+    normal正规方程，batchgrad批梯度下降，stochastic随机梯度下降
+    3.eps：loop停止的误差阈值
+    '''
+
     def __init__(self,lr = 0.001,solver = 'batchgrad',eps = 0.001):
 
         self.lr = lr
