@@ -62,6 +62,7 @@ class LinearRegression(object):
             self.coef = w
 
     def predict(self,x):
+
         x = np.array(x)
 
         if len(x.shape) == 1:
@@ -76,4 +77,84 @@ class LinearRegression(object):
     @property
     def feature_importance(self):
         return self.coef.ravel()
+
+
+class LogisticRegression(LinearRegression):
+
+    def __init__(self,lr = 0.001,solver = 'batchgrad',eps = 0.001):
+        super(LogisticRegression, self).__init__(lr = 0.001,solver = 'batchgrad',eps = 0.001)
+
+    def __sigmoid(self,x):
+        x = np.array(x)
+        return 1/(1+np.exp(-x))
+
+    def fit(self,x,y):
+
+        x = np.array(x)
+        y = np.array(y)
+
+        #处理单变量
+        if len(x.shape)==1:
+            x = x.reshape(-1, 1)
+
+        #处理多变量
+        self.M = x.shape[0]
+        self.N = x.shape[1]
+        y = y.reshape(-1, 1)
+
+        #批梯度下降法求解
+        if self.solver == 'batchgrad':
+            w = np.array([np.random.randn() for i in range(self.N)])
+            w = w.reshape(-1,1)
+
+            loss = 10000
+            while abs(np.average(loss)) > self.eps:
+                y_hat = np.dot(x,w)
+                loss = y_hat - y
+                grad = np.sum(loss*x,0).reshape(-1,1)
+                w = w - self.lr * grad
+            self.coef = w
+
+        #随机梯度下降
+        if self.solver == 'stochastic':
+            w = np.array([np.random.randn() for i in range(self.N)])
+            w = w.reshape(-1,1)
+
+            for m in range(self.M):
+                y_hat = np.dot(x[m],w)
+                loss = y_hat - y[m]
+                grad = loss*m
+                w = w - self.lr * grad
+            self.coef = w
+
+    def predict(self,x):
+
+        x = np.array(x)
+
+        if len(x.shape) == 1:
+            x = x.reshape(-1,1)
+            self.y_hat_c = self.coef * x
+            self.y_hat_c = self.__sigmoid(self.y_hat_c)
+            self.y_hat_c = [1 if i >= 0.5 else 0 for i in self.y_hat_c]
+            return self.y_hat_c
+
+        assert x.shape[1] == self.N,"输入维度错误"
+        self.y_hat_c = np.dot(np.transpose(self.coef),x).ravel()
+        self.y_hat_c = self.__sigmoid(self.y_hat_c)
+        self.y_hat_c = [1 if i >= 0.5 else 0 for i in self.y_hat_c]
+        return self.y_hat_c
+
+    def predict_proba(self,x):
+        x = np.array(x)
+
+        if len(x.shape) == 1:
+            x = x.reshape(-1, 1)
+            self.y_hat_c = self.coef * x
+            self.y_hat_p = self.__sigmoid(self.y_hat_c)
+            return self.y_hat_p
+
+        assert x.shape[1] == self.N, "输入维度错误"
+        self.y_hat_c = np.dot(np.transpose(self.coef), x).ravel()
+        self.y_hat_p = self.__sigmoid(self.y_hat_c)
+        return self.y_hat_p
 
