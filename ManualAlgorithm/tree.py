@@ -22,7 +22,7 @@ class Tree(object):
 
         return hd
 
-a dsfasdfsdfasdfsaf
+
 class DecitionTree(Tree):
 
     pass
