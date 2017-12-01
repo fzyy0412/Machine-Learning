@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-class Tree(object):
+class DecisionTree(object):
     def __init__(self):
         pass
 
@@ -23,9 +23,6 @@ class Tree(object):
         return hd
 
 
-class DecitionTree(Tree):
-
-    pass
 
 
 
